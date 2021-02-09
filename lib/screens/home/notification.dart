@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:sweetsheet/sweetsheet.dart';
 import 'package:worldly/screens/home/home.dart';
@@ -17,7 +19,7 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   final SweetSheet _sweetSheet = SweetSheet();
-
+  final AuthController authController = Get.put(AuthController());
   StreamController _postsController;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -27,7 +29,7 @@ class _NotificationsState extends State<Notifications> {
   String id = '';
 
   loadPosts() async {
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       return res;
     });
@@ -36,7 +38,7 @@ class _NotificationsState extends State<Notifications> {
   Future<Null> _handleRefresh() async {
     count++;
     print(count);
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       //showSnack();
       return null;
@@ -58,12 +60,23 @@ class _NotificationsState extends State<Notifications> {
       child: Scaffold(
         appBar: AppBar(
           title: Text("Notifications"),
-          leading: IconButton(icon: Icon(Icons.arrow_back),onPressed: ()=>Navigator.pushAndRemoveUntil(context,
-              MaterialPageRoute(builder: (context) => Home()), (route) => false),),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Home()),
+                (route) => false),
+          ),
         ),
         body: FutureBuilder(
-          future: accounts.requestlist(),
+          future: authController.requestlist(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.data == null) {
+              return Center(child: const CircularProgressIndicator());
+            }
+            if (snapshot.data.isEmpty) {
+              return Center(child: Text("You don't have any notification"));
+            }
             if (snapshot.hasData) {
               return Column(
                 children: [
@@ -75,8 +88,9 @@ class _NotificationsState extends State<Notifications> {
                           physics: const AlwaysScrollableScrollPhysics(),
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
+                            print("indexis" + index.toString());
                             return FutureBuilder(
-                                future: accounts.getprofile(
+                                future: authController.getprofile(
                                     snapshot.data[index].toString()),
                                 builder: (context, snap) {
                                   if (snap.data != null) {
@@ -84,7 +98,9 @@ class _NotificationsState extends State<Notifications> {
                                       print(snapshot.data.toString() +
                                           "ffffffff");
                                       return Container(
-                                        width:MediaQuery.of(context).size.width*.5,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .5,
                                         padding: const EdgeInsets.all(8.0),
                                         margin: const EdgeInsets.all(8.0),
                                         decoration: BoxDecoration(
@@ -133,8 +149,10 @@ class _NotificationsState extends State<Notifications> {
                                                       child: Container(
                                                           alignment: Alignment
                                                               .center,
-                                                          decoration: BoxDecoration(),
-                                                          child: (snapshot.data[index]
+                                                          decoration:
+                                                              BoxDecoration(),
+                                                          child: (snapshot.data[
+                                                                          index]
                                                                       [
                                                                       'profileimg'] ==
                                                                   "null")
@@ -287,8 +305,10 @@ class _NotificationsState extends State<Notifications> {
                                                     onTap: () async {
                                                       String id = snapshot
                                                           .data[index]['id'];
-                                                      bool ret = await accounts
-                                                          .acceptrequest(id);
+                                                      bool ret =
+                                                          await authController
+                                                              .acceptrequest(
+                                                                  id);
                                                       if (ret == true) {
                                                         print("--ACCEPTED--");
                                                         Navigator.pushReplacement(
@@ -325,8 +345,10 @@ class _NotificationsState extends State<Notifications> {
                                                     onTap: () async {
                                                       String id = snapshot
                                                           .data[index]['id'];
-                                                      bool ret = await accounts
-                                                          .rejectrequest(id);
+                                                      bool ret =
+                                                          await authController
+                                                              .rejectrequest(
+                                                                  id);
                                                       if (ret == true) {
                                                         print("--ACCEPTED--");
                                                         Navigator.pushReplacement(
@@ -366,13 +388,11 @@ class _NotificationsState extends State<Notifications> {
                                   return Align(
                                     alignment: Alignment.topCenter,
                                     child: ClipRRect(
-                                      child: Image.asset(
-                                        'assets/images/empty.png',
-                                        width: 500,
-                                        height: 500,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
+                                        child: Image.asset(
+                                            'assets/images/mainimage.jpeg',
+                                            width: 500,
+                                            height: 500,
+                                            fit: BoxFit.contain)),
                                   );
                                 });
                           },
@@ -383,7 +403,6 @@ class _NotificationsState extends State<Notifications> {
                 ],
               );
             }
-            return Center(child: CircularProgressIndicator());
           },
         ),
       ),

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
-import 'package:worldly/screens/home/home.dart';
+import 'package:worldly/screens/home/privatepolicy.dart';
 import 'package:worldly/screens/login/login.dart';
+
+import 'login.dart';
+import 'login.dart';
 
 class CreateAcct extends StatefulWidget {
   @override
@@ -9,24 +14,29 @@ class CreateAcct extends StatefulWidget {
 }
 
 class _CreateAcctState extends State<CreateAcct> {
+  final AuthController authController = Get.find();
   Accounts accounts = Accounts();
   _signup() async {
-    bool reg = await accounts.signup(_username.text, _email.text, _password.text);
+    bool reg = await authController.signup(
+        _username.text, _email.text, _password.text);
     if (reg == true) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
-    } else{
+      Get.off(Login());
+    } else {
       showDialog(
           context: context,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               title: Text("Failed"),
               content: Text("Email already exists"),
               actions: [
-                OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text("OK"))
+                OutlinedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("OK"))
               ],
             );
-          }
-      );
+          });
     }
   }
 
@@ -82,7 +92,7 @@ class _CreateAcctState extends State<CreateAcct> {
                     controller: _username,
                     autocorrect: true,
                     decoration: InputDecoration(
-                        hintText: 'Username',
+                        hintText: 'Name',
                         hintStyle: TextStyle(
                           color: Color(0xFFA9A9A9),
                           fontSize: 15,
@@ -159,7 +169,44 @@ class _CreateAcctState extends State<CreateAcct> {
                                 color: Color(0xFFFFFFFF), width: 1.2))),
                   ),
                 ),
-
+                SizedBox(height: 25),
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                              value: valueterms,
+                              onChanged: (v) {
+                                setState(() {
+                                  valueterms = v;
+                                });
+                              }),
+                          Text(
+                            'By clicking Sign up you agree to the our',
+                            style: TextStyle(
+                                color: Colors.black87,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ],
+                      ),
+                      TextButton(
+                        child: Text('Terms and Conditions'),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PrivatePolicy()));
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 25,
+                ),
                 Container(
                   width: 410,
                   height: 52.0,
@@ -178,45 +225,35 @@ class _CreateAcctState extends State<CreateAcct> {
                     textColor: Colors.black,
                     splashColor: Colors.white,
                     onPressed: () {
-                   if (_username.text.isNotEmpty&&_password.text.isNotEmpty&&_email.text.isNotEmpty) {
-                     _signup();
-                   }else{
-                     showDialog(
-                         context: context,
-                         builder: (context){
-                           return AlertDialog(
-                             title: Text("Failed"),
-                             content: Text("All fields should be filled"),
-                             actions: [
-                               OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text("OK"))
-                             ],
-                           );
-                         }
-                     );
-                   }
+                      if (_username.text.isNotEmpty &&
+                          _password.text.isNotEmpty &&
+                          _email.text.isNotEmpty &&
+                          valueterms == true) {
+                        _signup();
+                      } else {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text("Failed"),
+                                content: Text("All fields should be filled"),
+                                actions: [
+                                  OutlinedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text("OK"))
+                                ],
+                              );
+                            });
+                      }
                     },
                   ),
                 ),
                 SizedBox(
                   height: 25.0,
                 ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    children: [
-                      Text(
-                        'By clicking Sign up you agree to the our',
-                        style: TextStyle(
-                            color: Colors.black87, fontWeight: FontWeight.w700),
-                      ),
-                      Text(
-                        'Terms and Conditions',
-                        style: TextStyle(
-                            color: Colors.black87, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
-                ),
+
                 Container(
                   alignment: Alignment.bottomCenter,
                   padding: const EdgeInsets.only(top: 150.0),
@@ -239,7 +276,7 @@ class _CreateAcctState extends State<CreateAcct> {
                                 fontWeight: FontWeight.w600,
                                 color: Colors.blue)),
                         onTap: () {
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=> Login()));
+                          Get.off(Login());
                         },
                       ),
                     ],

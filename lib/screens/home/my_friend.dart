@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:worldly/screens/home/details.dart';
 import 'package:worldly/screens/home/home.dart';
@@ -17,7 +19,7 @@ class MyFriend extends StatefulWidget {
 class _MyFriendState extends State<MyFriend>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
-
+  final AuthController authController = Get.put(AuthController());
   @override
   void initState() {
     _tabController = new TabController(length: 2, vsync: this);
@@ -103,7 +105,7 @@ class Friendlist_Requests extends StatefulWidget {
 
 class _Friendlist_RequestsState extends State<Friendlist_Requests> {
   final SweetSheet _sweetSheet = SweetSheet();
-
+  final AuthController authController = Get.put(AuthController());
   StreamController _postsController;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -113,7 +115,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
   String id = '';
 
   loadPosts() async {
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       return res;
     });
@@ -130,7 +132,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
   Future<Null> _handleRefresh() async {
     count++;
     print(count);
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       showSnack();
       return null;
@@ -147,7 +149,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: accounts.requestlist(),
+      future: authController.requestlist(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           return Column(
@@ -161,7 +163,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
                       itemCount: snapshot.data.length,
                       itemBuilder: (context, index) {
                         return FutureBuilder(
-                            future: accounts
+                            future: authController
                                 .getprofile(snapshot.data[index].toString()),
                             builder: (context, snap) {
                               if (snap.data != null) {
@@ -258,7 +260,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
                                                     color: Colors.blue,
                                                     onPressed: () async {
                                                       String id = snapshot.data[index]['id'];
-                                                      bool ret = await accounts.acceptrequest(id);
+                                                      bool ret = await authController.acceptrequest(id);
                                                       if (ret == true) {
                                                         Navigator.pushReplacement(
                                                           context,
@@ -287,7 +289,7 @@ class _Friendlist_RequestsState extends State<Friendlist_Requests> {
                                                     color: Color(0xFF95989A),
                                                     onPressed: () async {
                                                       String id = snapshot.data[index]['id'];
-                                                      bool ret = await accounts.rejectrequest(id);
+                                                      bool ret = await authController.rejectrequest(id);
                                                       if (ret == true) {
                                                         Navigator.pushReplacement(
                                                           context,
@@ -369,14 +371,14 @@ class Accept_Requests extends StatefulWidget {
 class _Accept_RequestsState extends State<Accept_Requests> {
   StreamController _postsController;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
-
+  final AuthController authController = Get.put(AuthController());
   int count = 1;
 
   Accounts accounts = Accounts();
   String id = '';
 
   loadPosts() async {
-    accounts.acceptrequest(id).then((res) async {
+    authController.acceptrequest(id).then((res) async {
       _postsController.add(res);
       return res;
     });
@@ -393,7 +395,7 @@ class _Accept_RequestsState extends State<Accept_Requests> {
   Future<Null> _handleRefresh() async {
     count++;
     print(count);
-    accounts.acceptrequest(count * 5).then((res) async {
+    authController.acceptrequest(count * 5).then((res) async {
       _postsController.add(res);
       showSnack();
       return null;
@@ -410,7 +412,7 @@ class _Accept_RequestsState extends State<Accept_Requests> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: accounts.connection(),
+      future: authController.connection(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           return Column(
@@ -546,14 +548,14 @@ class Reject_Requests extends StatefulWidget {
 class _Reject_RequestsState extends State<Reject_Requests> {
   Accounts accounts = Accounts();
   String id = '';
-
+  final AuthController authController = Get.put(AuthController());
   StreamController _postsController;
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
   int count = 1;
 
   loadPosts() async {
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       return res;
     });
@@ -570,7 +572,7 @@ class _Reject_RequestsState extends State<Reject_Requests> {
   Future<Null> _handleRefresh() async {
     count++;
     print(count);
-    accounts.requestlist().then((res) async {
+    authController.requestlist().then((res) async {
       _postsController.add(res);
       showSnack();
       return null;
@@ -613,7 +615,7 @@ class _Reject_RequestsState extends State<Reject_Requests> {
                           itemBuilder: (context, index) {
                             return FutureBuilder(
                                 future:
-                                    accounts.getprofile(snapshot.data[index]),
+                                    authController.getprofile(snapshot.data[index]),
                                 builder: (context, snap) {
                                   if (snap.data != null) {
                                     return Padding(
@@ -718,7 +720,7 @@ class SendFriend_Request extends StatefulWidget {
 class _SendFriend_RequestState extends State<SendFriend_Request> {
   Accounts accounts = Accounts();
   String searchvalue = "";
-
+  final AuthController authController = Get.put(AuthController());
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -772,7 +774,7 @@ class _SendFriend_RequestState extends State<SendFriend_Request> {
                   MaterialPageRoute(builder: (context) => MyFriend())))),
         ),
         body:(searchvalue.isNotEmpty)? FutureBuilder(
-            future: accounts.search(searchvalue),
+            future: authController.search(searchvalue),
             builder: (context, snapshot) {
               if (snapshot.data == null) {
                 return Center(child: const CircularProgressIndicator());

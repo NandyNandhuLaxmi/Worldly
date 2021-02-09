@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/screens/home/home.dart';
 import '../../data/data.dart';
 
@@ -11,6 +13,7 @@ class ContactInfo extends StatefulWidget {
 }
 
 class _ContactInfoState extends State<ContactInfo> {
+  final AuthController authController = Get.put(AuthController());
   Accounts accounts = Accounts();
   String email = '', mobile = ''; 
 
@@ -58,7 +61,7 @@ class _ContactInfoState extends State<ContactInfo> {
           ),
           body: SingleChildScrollView(
             child: FutureBuilder(
-              future: accounts.contactus(email, mobile),
+              future: authController.contactus(email, mobile),
               builder: (context, snapshot) {
                 if(snapshot.data == null) {
                   return Center(

@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:worldly/screens/home/my_profile.dart';
 import 'package:image_pickers/image_pickers.dart';
@@ -28,7 +30,7 @@ class _AddUserState extends State<AddUser> {
 
   final RoundedLoadingButtonController _btnController =
       new RoundedLoadingButtonController();
-
+  final AuthController authController = Get.put(AuthController());
   void _doSomething() async {
     Timer(Duration(seconds: 3), () {
       _btnController.success();
@@ -43,7 +45,7 @@ class _AddUserState extends State<AddUser> {
   getuser() async {
     Store store = Store();
     String id = await store.getstring("userid");
-    var userdata = await accounts.getprofile(id);
+    var userdata = await authController.getprofile(id);
     print(userdata.toString()+"gggggggggggggg");
     String user = await store.getstring("username");
     setState(() {
@@ -237,9 +239,9 @@ bool clicked = false;
                           clicked = true;
                         });
                         showToastMessage("wait a few mins...");
-                        accounts.asyncFileUpload(_image);
+                        authController.asyncFileUpload(_image);
                         bool val =
-                            await accounts.updateuser(name.text, about.text);
+                            await authController.updateuser(name.text, about.text);
                         if (val == true) {
                           Navigator.pushReplacement(
                               context,

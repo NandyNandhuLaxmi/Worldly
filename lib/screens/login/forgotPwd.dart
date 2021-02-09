@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:worldly/screens/login/login.dart';
 
@@ -9,6 +11,7 @@ class ForgotPwd extends StatefulWidget {
 }
 
 class _ForgotPwdState extends State<ForgotPwd> {
+  final AuthController authController = Get.put(AuthController());
   TextEditingController email = TextEditingController();
   Accounts accounts = Accounts();
   @override
@@ -80,7 +83,7 @@ class _ForgotPwdState extends State<ForgotPwd> {
                     textColor: Colors.black,
                     splashColor: Colors.white,
                     onPressed: () async{
-                    bool reset = await accounts.reset(email.text);
+                    bool reset = await authController.reset(email.text);
                     if (reset == true) {
                       showDialog(
                           context: context,

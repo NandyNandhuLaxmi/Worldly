@@ -1,6 +1,7 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
-
+import 'package:worldly/controller/auth_controller.dart';
+import 'package:get/get.dart';
 import '../../data/data.dart';
 import 'home.dart';
 
@@ -10,6 +11,7 @@ class AboutUs extends StatefulWidget {
 }
 
 class _AboutUsState extends State<AboutUs> {
+  final AuthController authController = Get.put(AuthController());
   Accounts accounts = Accounts();
   String about = " ";
 
@@ -38,7 +40,7 @@ class _AboutUsState extends State<AboutUs> {
         ),
         body: SingleChildScrollView(
           child: FutureBuilder(
-            future: accounts.aboutus(about),
+            future: authController.aboutus(about),
             builder: (context, snapshot) {
               if(snapshot.data == null) {
                 return Center(

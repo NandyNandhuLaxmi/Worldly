@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:worldly/screens/home/home.dart';
 import 'package:worldly/screens/login/forgotPwd.dart';
+import '../home/home.dart';
+import 'createAcct.dart';
 import 'createAcct.dart';
 
 class Login extends StatefulWidget {
@@ -11,26 +15,29 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final AuthController authController = Get.find();
   Accounts accounts = Accounts();
   login() async {
-    bool log = await accounts.login(_email.text, _password.text);
+    bool log = await authController.login(_email.text, _password.text);
     print(log);
     if (log == true) {
-      Navigator.pushReplacement(
-          context, MaterialPageRoute(builder: (context) => Home()));
+      Get.off(Home());
     } else {
       showDialog(
           context: context,
-          builder: (context){
+          builder: (context) {
             return AlertDialog(
               title: Text("Failed"),
               content: Text("Email and password is incorrect"),
               actions: [
-                OutlinedButton(onPressed: (){Navigator.pop(context);}, child: Text("OK"))
+                OutlinedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text("OK"))
               ],
             );
-          }
-      );
+          });
     }
   }
 
@@ -45,7 +52,7 @@ class _LoginState extends State<Login> {
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   final RoundedLoadingButtonController _btnController =
-  new RoundedLoadingButtonController();
+      new RoundedLoadingButtonController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,12 +104,12 @@ class _LoginState extends State<Login> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.all(Radius.circular(30.0)),
                       borderSide:
-                      BorderSide(color: Color(0xFFFFFFFF), width: 1.2),
+                          BorderSide(color: Color(0xFFFFFFFF), width: 1.2),
                     ),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.all(Radius.circular(30.0)),
                         borderSide:
-                        BorderSide(color: Color(0xFFFFFFFF), width: 1.2))),
+                            BorderSide(color: Color(0xFFFFFFFF), width: 1.2))),
               ),
             ),
             Container(
@@ -127,11 +134,11 @@ class _LoginState extends State<Login> {
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(30.0)),
                           borderSide:
-                          BorderSide(color: Color(0xFFFFFFFF), width: 1.2),
+                              BorderSide(color: Color(0xFFFFFFFF), width: 1.2),
                         ),
                         focusedBorder: OutlineInputBorder(
                             borderRadius:
-                            BorderRadius.all(Radius.circular(30.0)),
+                                BorderRadius.all(Radius.circular(30.0)),
                             borderSide: BorderSide(
                                 color: Color(0xFFFFFFFF), width: 1.2))),
                   ),
@@ -173,70 +180,80 @@ class _LoginState extends State<Login> {
                 // textColor: Colors.black,
                 // splashColor: Colors.white,
                 onPressed: () {
-
                   if (_email.text.isNotEmpty && _password.text.isNotEmpty) {
                     login();
-                  }else{
+                  } else {
                     showDialog(
                         context: context,
-                        builder: (context){
+                        builder: (context) {
                           return AlertDialog(
-                            title: Text("Failed", style: TextStyle(color: Colors.red),),
+                            title: Text(
+                              "Failed",
+                              style: TextStyle(color: Colors.red),
+                            ),
                             content: Text("Email and password incorrect"),
                             actions: [
                               FlatButton(
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: Text("OK")
-                              )
+                                  child: Text("OK"))
                             ],
                           );
-                        }
-                    );
+                        });
                   }
                 },
               ),
             ),
             SizedBox(height: 20),
-            Text('or', style: TextStyle(color: Color(0xFF000000), fontSize: 18, fontWeight: FontWeight.w300),),
+            Text(
+              'or',
+              style: TextStyle(
+                  color: Color(0xFF000000),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300),
+            ),
             SizedBox(height: 20),
             Container(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        image: DecorationImage(
-                            image: AssetImage('assets/images/facebook.png')
-                        )
+                  // Container(
+                  //   width: 40,
+                  //   height: 40,
+                  //   decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(8.0),
+                  //       image: DecorationImage(
+                  //           image: AssetImage('assets/images/facebook.png'))),
+                  // ),
+                  // SizedBox(width: 15),
+                  InkWell(
+                    onTap: () async {
+                      bool d = await authController.signInWithGoogle();
+                      if (d == true) {
+                        Get.off(Home());
+                      }
+
+                    },
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8.0),
+                          image: DecorationImage(
+                              image: AssetImage('assets/images/google.png'))),
                     ),
                   ),
                   SizedBox(width: 15),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        image: DecorationImage(
-                            image: AssetImage('assets/images/google.png')
-                        )
-                    ),
-                  ),
-                  SizedBox(width: 15),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
-                        image: DecorationImage(
-                            image: AssetImage('assets/images/linkedin.png'), fit: BoxFit.cover
-                        )
-                    ),
-                  ),
+                  // Container(
+                  //   width: 40,
+                  //   height: 40,
+                  //   decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(8.0),
+                  //       image: DecorationImage(
+                  //           image: AssetImage('assets/images/linkedin.png'),
+                  //           fit: BoxFit.cover)),
+                  // ),
                 ],
               ),
             ),
@@ -263,10 +280,7 @@ class _LoginState extends State<Login> {
                               fontWeight: FontWeight.w600,
                               color: Colors.blue)),
                       onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CreateAcct()));
+                        Get.off(CreateAcct());
                       },
                     ),
                   ],

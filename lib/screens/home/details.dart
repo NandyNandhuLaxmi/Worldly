@@ -1,6 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:sweetsheet/sweetsheet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +21,7 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> {
   Accounts accounts = Accounts();
   final SweetSheet _sweetSheet = SweetSheet();
+  final AuthController authController = Get.put(AuthController());
 
   int count = 1;
   String id = '';
@@ -41,7 +44,7 @@ class _DetailsState extends State<Details> {
       ),
       body: SingleChildScrollView(
         child: FutureBuilder(
-            future: accounts.getprofile(widget.val),
+            future: authController.getprofile(widget.val),
             builder: (context, snapshot) {
               print(snapshot.data.toString() + "mmmmmmmmmmm");
               if (snapshot.data == null) {
@@ -163,7 +166,7 @@ class _DetailsState extends State<Details> {
                                     //   print("Failed");
                                     // }
 
-                                    String req = await accounts
+                                    String req = await authController
                                         .sendfriendrequest(widget.val);
                                     if (req == "1") {
                                       Fluttertoast.showToast(

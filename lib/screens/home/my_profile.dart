@@ -1,6 +1,8 @@
 import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+import 'package:worldly/controller/auth_controller.dart';
 import 'package:worldly/data/data.dart';
 import 'package:worldly/screens/home/adduser.dart';
 import 'package:worldly/screens/home/home.dart';
@@ -18,7 +20,7 @@ class _MyProfileState extends State<MyProfile> {
   Accounts accounts = Accounts();
   Store store = Store();
   String val = "";
-
+  final AuthController authController = Get.put(AuthController());
   getshare() async {
     final id = await store.getstring("userid");
     setState(() {
@@ -68,7 +70,7 @@ class _MyProfileState extends State<MyProfile> {
         ),
         body: SingleChildScrollView(
           child: FutureBuilder(
-              future: accounts.getprofile(val),
+              future: authController.getprofile(val),
               builder: (context, snapshot) {
                 print(snapshot.data);
                 if (snapshot.data == null) {
@@ -226,13 +228,13 @@ class _MyProfileState extends State<MyProfile> {
                                         fontSize: 15)),
                                 IconButton(
                                   icon: Icon(Icons.add),
-                                    onPressed: () => _addtag(context),
-                                  ),
+                                  onPressed: () => _addtag(context),
+                                ),
                               ],
                             ),
                             SizedBox(height: 8),
                             FutureBuilder(
-                                future: accounts.skill(),
+                                future: authController.skill(),
                                 builder: (context, snap) {
                                   print(snapshot.data);
                                   if (snapshot.data == null) {
@@ -247,9 +249,13 @@ class _MyProfileState extends State<MyProfile> {
                                     return Wrap(
                                       children: [
                                         GridView.builder(
-                                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4),
-                                            itemCount: snapshot.data['taglist'].length,
-                                            controller: new ScrollController(keepScrollOffset: false),
+                                            gridDelegate:
+                                                SliverGridDelegateWithFixedCrossAxisCount(
+                                                    crossAxisCount: 4),
+                                            itemCount:
+                                                snapshot.data['taglist'].length,
+                                            controller: new ScrollController(
+                                                keepScrollOffset: false),
                                             shrinkWrap: true,
                                             scrollDirection: Axis.vertical,
                                             itemBuilder: (context, index) {
@@ -258,33 +264,61 @@ class _MyProfileState extends State<MyProfile> {
                                                 children: [
                                                   Container(
                                                     // padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                                                    margin: const EdgeInsets.all(8.0),
+                                                    margin:
+                                                        const EdgeInsets.all(
+                                                            8.0),
                                                     decoration: BoxDecoration(
                                                       color: Color(0xFFF2F2F2),
-                                                      borderRadius: BorderRadius.circular(30),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              30),
                                                     ),
                                                     child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
                                                       children: [
-                                                        Text(snapshot.data['taglist'][index]["tagname"].toString()),
+                                                        Text(snapshot
+                                                            .data['taglist']
+                                                                [index]
+                                                                ["tagname"]
+                                                            .toString()),
                                                         IconButton(
-                                                          icon: Icon(EvaIcons.closeCircleOutline),
-                                                            onPressed: () async {
-                                                              String id = snapshot.data['taglist'][index]['editid'];
-                                                              bool ret = await accounts.deleteusertag(id);
+                                                            icon: Icon(EvaIcons
+                                                                .closeCircleOutline),
+                                                            onPressed:
+                                                                () async {
+                                                              String id = snapshot
+                                                                          .data[
+                                                                      'taglist']
+                                                                  [
+                                                                  index]['editid'];
+                                                              bool ret =
+                                                                  await authController
+                                                                      .deleteusertag(
+                                                                          id);
                                                               if (ret == true) {
                                                                 Fluttertoast.showToast(
-                                                                    msg: "Skill removed...",
-                                                                    toastLength: Toast.LENGTH_SHORT,
-                                                                    gravity: ToastGravity.BOTTOM,
-                                                                    timeInSecForIosWeb: 1,
-                                                                    backgroundColor: Color(0xFF666666),
-                                                                    textColor: Colors.white,
-                                                                    fontSize: 12.0);
-                                                                setState(() { });
+                                                                    msg:
+                                                                        "Skill removed...",
+                                                                    toastLength:
+                                                                        Toast
+                                                                            .LENGTH_SHORT,
+                                                                    gravity: ToastGravity
+                                                                        .BOTTOM,
+                                                                    timeInSecForIosWeb:
+                                                                        1,
+                                                                    backgroundColor:
+                                                                        Color(
+                                                                            0xFF666666),
+                                                                    textColor:
+                                                                        Colors
+                                                                            .white,
+                                                                    fontSize:
+                                                                        12.0);
+                                                                setState(() {});
                                                               }
-                                                            }
-                                                        )
+                                                            })
                                                       ],
                                                     ),
                                                   ),
@@ -293,10 +327,11 @@ class _MyProfileState extends State<MyProfile> {
                                             }),
                                       ],
                                     );
-                                 } catch (e) {
-                                      return Center(child: Text("no tags"),
+                                  } catch (e) {
+                                    return Center(
+                                      child: Text("no tags"),
                                     );
-                                  } 
+                                  }
                                 }),
                           ]),
                     ),
@@ -309,95 +344,95 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   _addtag(context) {
-  showModalBottomSheet(
-    context: context,
-    builder: (BuildContext bc) {
-      return Stack(
-        children: [
-          Container(
-            height: 30.0,
-            width: double.infinity,
-            color: Colors.black54,
-          ),
-          Container(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.5,
-            decoration: BoxDecoration(
-              color: Color(0xFFFFFFFF),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              )
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return Stack(children: [
+            Container(
+              height: 30.0,
+              width: double.infinity,
+              color: Colors.black54,
             ),
-            child: FutureBuilder(
-                future: accounts.skill(),
-                builder: (BuildContext context,  snapshot) {
-                  print(snapshot.data.toString());
-                  if (snapshot.data != null) {
-                    return GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4),
-                        itemCount: snapshot.data['taglist'].length,
-                        itemBuilder: (context, index) {
-                          return Wrap(
-                            direction: Axis.horizontal,
-                            children: [
-                              InkWell(
-                                onTap: ()async{
-                                  String id  = snapshot.data['taglist'][index]['id'];
-                                  String ret = await accounts.usertag(id);
-                                  if (ret == "1") {
-                                    Fluttertoast.showToast(
-                                        msg: "Added Successfully...",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Color(0xFF666666),
-                                        textColor: Colors.white,
-                                        fontSize: 12.0);
-                                    setState(() { });
-                                  }  if(ret == "3"){
-                                    Fluttertoast.showToast(
-                                        msg: "Skill already added...",
-                                        toastLength: Toast.LENGTH_SHORT,
-                                        gravity: ToastGravity.BOTTOM,
-                                        timeInSecForIosWeb: 1,
-                                        backgroundColor: Color(0xFF666666),
-                                        textColor: Colors.white,
-                                        fontSize: 12.0);
-                                  }
-                                },
-                                child: Container(
-                                  padding:  const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 8.0),
-                                  margin: const EdgeInsets.all(8.0),
-                                  decoration: BoxDecoration(
-                                    color: Color(0xFFF2F2F2),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Text(snapshot.data['taglist'][index]["tag"]
-                                          .toString()),
-                                      Icon(Icons.add)
-                                    ],
+            Container(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.5,
+              decoration: BoxDecoration(
+                  color: Color(0xFFFFFFFF),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  )),
+              child: FutureBuilder(
+                  future: authController.skill(),
+                  builder: (BuildContext context, snapshot) {
+                    print(snapshot.data.toString());
+                    if (snapshot.data != null) {
+                      return GridView.builder(
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 4),
+                          itemCount: snapshot.data['taglist'].length,
+                          itemBuilder: (context, index) {
+                            return Wrap(
+                              direction: Axis.horizontal,
+                              children: [
+                                InkWell(
+                                  onTap: () async {
+                                    String id =
+                                        snapshot.data['taglist'][index]['id'];
+                                    String ret =
+                                        await authController.usertag(id);
+                                    if (ret == "1") {
+                                      Fluttertoast.showToast(
+                                          msg: "Added Successfully...",
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                          backgroundColor: Color(0xFF666666),
+                                          textColor: Colors.white,
+                                          fontSize: 12.0);
+                                      setState(() {});
+                                    }
+                                    if (ret == "3") {
+                                      Fluttertoast.showToast(
+                                          msg: "Skill already added...",
+                                          toastLength: Toast.LENGTH_SHORT,
+                                          gravity: ToastGravity.BOTTOM,
+                                          timeInSecForIosWeb: 1,
+                                          backgroundColor: Color(0xFF666666),
+                                          textColor: Colors.white,
+                                          fontSize: 12.0);
+                                    }
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        8.0, 8.0, 8.0, 8.0),
+                                    margin: const EdgeInsets.all(8.0),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFF2F2F2),
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Text(snapshot.data['taglist'][index]
+                                                ["tag"]
+                                            .toString()),
+                                        Icon(Icons.add)
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        });
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                }),
-          )
-        ]
-      );
-    }
-  );
+                              ],
+                            );
+                          });
+                    } else {
+                      return Center(child: CircularProgressIndicator());
+                    }
+                  }),
+            )
+          ]);
+        });
+  }
 }
-}
-
-
