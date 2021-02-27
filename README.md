@@ -1,6 +1,34 @@
 # worldly
 
-A new Flutter project.
+## Changes
+
+[Wordly API](http://wordly.in/appapi/)
+
+- Login
+- Register
+- Reset Password
+- Get Profile
+- Update Profile
+- Get Profile Images
+- Update Profile Images
+- Tags CRUD
+- Privacy Policy
+- Contact Info
+
+<B>Friend Request Functionality API</B>
+- Send Friend Request
+- Request List 
+- Accept Request
+- Reject Request
+
+![Frame 58](https://user-images.githubusercontent.com/70564915/109384227-5ad14080-7911-11eb-949f-5fd0681f5e5c.png)
+
+- [Notes Alternated](https://del.dog/DEVICEID.txt)
+
+<B>Logo Changed</B>
+
+![logo](https://user-images.githubusercontent.com/70564915/109384533-7ccbc280-7913-11eb-9e27-9d3809843686.png)
+![mainimage](https://user-images.githubusercontent.com/70564915/109384534-7dfcef80-7913-11eb-91cf-44b680c345ca.jpeg)
 
 ## Getting Started
 
